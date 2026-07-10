@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuard | Disease Outbreak Analysis Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .dashboard-layout {
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .navbar-brand i {
+            font-size: 28px;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info h3 {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f44336 100%);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px 0;
+        }
+
+        /* Report Header */
+        .report-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .report-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-info h4 {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-info p {
+            color: #333;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-info .value-large {
+            font-size: 28px;
+        }
+
+        /* Main Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-header h3 {
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-header i {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        /* Disease Card */
+        .disease-display {
+            text-align: center;
+        }
+
+        .disease-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .confidence-meter {
+            margin: 20px 0;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .confidence-percentage {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 10px;
+            color: #667eea;
+        }
+
+        /* Risk Card */
+        .risk-display {
+            text-align: center;
+        }
+
+        .risk-badge-large {
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .risk-low {
+            background: #e8f5e9;
+            color: #56ab2f;
+        }
+
+        .risk-moderate {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .risk-high {
+            background: #ffebee;
+            color: #ff416c;
+        }
+
+        .risk-critical {
+            background: #fce4ec;
+            color: #dc3545;
+        }
+
+        .risk-factor {
+            font-size: 18px;
+            color: #666;
+            margin: 15px 0;
+        }
+
+        .outbreak-timer {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .outbreak-timer .days {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .outbreak-timer .label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Pest Card */
+        .pest-display {
+            text-align: center;
+        }
+
+        .pest-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .pest-confidence {
+            font-size: 20px;
+            color: #ff9800;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .pest-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        /* Timeline Card */
+        .timeline-card {
+            grid-column: span 3;
+        }
+
+        .timeline-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 200px;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+
+        .timeline-bar-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 5px;
+        }
+
+        .timeline-bar-wrapper {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .timeline-bar {
+            width: 40px;
+            border-radius: 8px 8px 0 0;
+            transition: height 0.5s ease;
+            cursor: pointer;
+        }
+
+        .timeline-bar:hover {
+            transform: scale(1.1);
+        }
+
+        .timeline-day {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .timeline-risk-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+        /* Recommendations Card - Enhanced Styling */
+        .recommendations-card {
+            grid-column: span 3;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .recommendation-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .recommendation-category {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+        }
+
+        .recommendation-category:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .recommendation-category.urgent {
+            border-left-color: #dc3545;
+            background: linear-gradient(to right, #fff5f5, #ffffff);
+        }
+
+        .recommendation-category.warning {
+            border-left-color: #fd7e14;
+            background: linear-gradient(to right, #fff4e6, #ffffff);
+        }
+
+        .recommendation-category.organic {
+            border-left-color: #28a745;
+            background: linear-gradient(to right, #f0fff4, #ffffff);
+        }
+
+        .recommendation-category.chemical {
+            border-left-color: #6f42c1;
+            background: linear-gradient(to right, #f3e8ff, #ffffff);
+        }
+
+        .recommendation-category.preventive {
+            border-left-color: #17a2b8;
+            background: linear-gradient(to right, #e3f2fd, #ffffff);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .category-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .urgent .category-icon {
+            background: #fee;
+            color: #dc3545;
+        }
+
+        .warning .category-icon {
+            background: #fff3e0;
+            color: #fd7e14;
+        }
+
+        .organic .category-icon {
+            background: #e8f5e9;
+            color: #28a745;
+        }
+
+        .chemical .category-icon {
+            background: #f3e5f5;
+            color: #6f42c1;
+        }
+
+        .preventive .category-icon {
+            background: #e1f5fe;
+            color: #17a2b8;
+        }
+
+        .category-header h4 {
+            flex: 1;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: #2d3436;
+        }
+
+        .priority-badge {
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .priority-badge.critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .priority-badge.high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .priority-badge.organic {
+            background: #28a745;
+            color: white;
+        }
+
+        .priority-badge.chemical {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .priority-badge.preventive {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .recommendation-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .recommendation-card:hover {
+            transform: translateX(5px);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .urgent-item {
+            background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+            border-left: 4px solid #dc3545;
+        }
+
+        .warning-item {
+            background: linear-gradient(135deg, #fff4e6, #ffe9d4);
+            border-left: 4px solid #fd7e14;
+        }
+
+        .organic-item {
+            background: linear-gradient(135deg, #f0fff4, #e0ffe8);
+            border-left: 4px solid #28a745;
+        }
+
+        .chemical-item {
+            background: linear-gradient(135deg, #f3e8ff, #e8d5ff);
+            border-left: 4px solid #6f42c1;
+        }
+
+        .preventive-item {
+            background: linear-gradient(135deg, #e3f2fd, #d1e9ff);
+            border-left: 4px solid #17a2b8;
+        }
+
+        .rec-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .urgent-item .rec-icon {
+            color: #dc3545;
+        }
+
+        .warning-item .rec-icon {
+            color: #fd7e14;
+        }
+
+        .organic-item .rec-icon {
+            color: #28a745;
+        }
+
+        .chemical-item .rec-icon {
+            color: #6f42c1;
+        }
+
+        .preventive-item .rec-icon {
+            color: #17a2b8;
+        }
+
+        .rec-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .rec-text {
+            font-size: 0.95rem;
+            color: #2d3436;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .rec-tag {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .urgent-tag {
+            background: #dc3545;
+            color: white;
+        }
+
+        .warning-tag {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .organic-tag {
+            background: #28a745;
+            color: white;
+        }
+
+        .chemical-tag {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .preventive-tag {
+            background: #17a2b8;
+            color: white;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .gallery-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .gallery-label small {
+            display: block;
+            font-size: 9px;
+            opacity: 0.8;
+            margin-top: 3px;
+        }
+
+        /* Confidence Details */
+        .confidence-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .confidence-detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .confidence-detail-item .label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .confidence-detail-item .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-box i {
+            font-size: 28px;
+            color: #2196f3;
+        }
+
+        .info-box p {
+            color: #0d47a1;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .timeline-card,
+            .recommendations-card {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-card,
+            .recommendations-card {
+                grid-column: span 1;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .confidence-details {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-container {
+                flex-wrap: wrap;
+                height: auto;
+            }
+
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .recommendation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rec-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .rec-tag {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .recommendation-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .rec-icon {
+                margin: 0 auto;
+            }
+        }
+
+        /* ===== MODEL COMPARISON SECTION ===== */
+        .model-comparison-section {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .model-comparison-section .section-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .model-comparison-section .section-title h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .model-comparison-section .section-title .title-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .model-comparison-section .section-subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+            margin-left: 62px;
+        }
+
+        /* Summary Metrics Row */
+        .comparison-summary-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+
+        .summary-metric-card {
+            background: linear-gradient(135deg, #f8f9ff, #f0f2ff);
+            border-radius: 14px;
+            padding: 18px 16px;
+            text-align: center;
+            border: 1px solid #e8eaf6;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .summary-metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .summary-metric-card.our-model-highlight {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+        }
+
+        .summary-metric-card .metric-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #667eea;
+            display: block;
+            line-height: 1;
+        }
+
+        .summary-metric-card.our-model-highlight .metric-value {
+            color: white;
+        }
+
+        .summary-metric-card .metric-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .summary-metric-card.our-model-highlight .metric-label {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* Comparison Table */
+        .cmp-table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #eef0ff;
+            margin-bottom: 30px;
+        }
+
+        .cmp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 780px;
+        }
+
+        .cmp-table thead tr {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .cmp-table thead th {
+            padding: 16px 14px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .cmp-table thead th:first-child {
+            text-align: left;
+            border-radius: 16px 0 0 0;
+        }
+
+        .cmp-table thead th:last-child {
+            border-radius: 0 16px 0 0;
+        }
+
+        .cmp-table tbody tr {
+            border-bottom: 1px solid #f0f2ff;
+            transition: background 0.2s;
+        }
+
+        .cmp-table tbody tr:hover {
+            background: #fafbff;
+        }
+
+        .cmp-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .cmp-table tbody tr.our-model-row {
+            background: linear-gradient(90deg, #f0f2ff 0%, #f8f0ff 100%);
+            font-weight: 600;
+        }
+
+        .cmp-table tbody tr.our-model-row:hover {
+            background: linear-gradient(90deg, #e8eaff 0%, #f0e8ff 100%);
+        }
+
+        .cmp-table tbody td {
+            padding: 14px;
+            text-align: center;
+            color: #444;
+            vertical-align: middle;
+        }
+
+        .cmp-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .model-name-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .our-model-row .model-name-cell .model-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 30px;
+            margin-left: 6px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .check-icon {
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .cross-icon {
+            color: #dc3545;
+            font-size: 16px;
+        }
+
+        .partial-icon {
+            color: #fd7e14;
+            font-size: 16px;
+        }
+
+        /* Accuracy Bar inside table */
+        .acc-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .acc-bar-bg {
+            width: 80px;
+            height: 8px;
+            background: #e8eaf6;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .acc-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .acc-label {
+            font-weight: 700;
+            font-size: 13px;
+            min-width: 38px;
+            text-align: right;
+        }
+
+        /* Metric bars section */
+        .metrics-bars-section {
+            margin-top: 10px;
+        }
+
+        .metrics-bars-section h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .metric-bar-label {
+            width: 190px;
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .metric-bar-track {
+            flex: 1;
+            height: 10px;
+            background: #eef0ff;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .metric-bar-prev {
+            position: absolute;
+            height: 100%;
+            border-radius: 10px;
+            background: #b0bff0;
+            top: 0;
+            left: 0;
+            transition: width 1.2s ease;
+        }
+
+        .metric-bar-ours {
+            position: absolute;
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            top: 0;
+            left: 0;
+            transition: width 1.4s ease 0.2s;
+        }
+
+        .metric-bar-values {
+            display: flex;
+            gap: 14px;
+            width: 130px;
+            flex-shrink: 0;
+            justify-content: flex-end;
+        }
+
+        .metric-bar-values span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .prev-val {
+            color: #888;
+        }
+
+        .our-val {
+            color: #667eea;
+        }
+
+        .cmp-legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .cmp-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.prev {
+            background: #b0bff0;
+        }
+
+        .legend-dot.ours {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        @media (max-width: 768px) {
+            .metric-bar-label {
+                width: 130px;
+                font-size: 12px;
+            }
+
+            .metric-bar-values {
+                width: 100px;
+            }
+
+            .comparison-summary-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-layout">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="/dashboard" class="navbar-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="nav_brand">AgriGuard</span>
+            </a>
+
+            <div class="navbar-user">
+                <div class="user-info">
+                    <h3><span data-i18n="nav_welcome">Welcome, </span>{{ user }}</h3>
+                    <p data-i18n="result_report_title">Disease Outbreak Analysis Report</p>
+                </div>
+                <!-- Language Toggle -->
+                <button class="lang-toggle-btn" onclick="toggleLanguage()" title="Switch language"
+                    style="display:inline-flex;align-items:center;gap:0;background:#f0f0f8;border:2px solid #667eea;border-radius:50px;padding:0;cursor:pointer;font-size:13px;font-weight:600;overflow:hidden;margin-right:8px;">
+                    <span class="lang-en"
+                        style="padding:5px 12px;color:#667eea;font-weight:700;opacity:1;transition:all 0.2s;">EN</span>
+                    <span style="color:#aaa;font-size:11px;">|</span>
+                    <span class="lang-te"
+                        style="padding:5px 12px;color:#667eea;font-weight:400;opacity:0.55;transition:all 0.2s;">తె</span>
+                </button>
+                <a href="/dashboard" class="btn btn-outline btn-sm">
+                    <i class="fas fa-tachometer-alt"></i> <span data-i18n="nav_history">Dashboard</span>
+                </a>
+                <a href="/logout" class="btn btn-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="nav_logout">Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content container">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1>
+                <i class="fas fa-exclamation-triangle"></i>
+                <span data-i18n="result_report_title">Disease Outbreak Analysis Report</span>
+            </h1>
+            <p>{{ crop }} — {{ place }}</p>
+            <div class="header-badges">
+                <span class="header-badge">
+                    <i class="fas fa-calendar"></i> {{ now.strftime('%Y-%m-%d %H:%M') }}
+                </span>
+                <span class="header-badge">
+                    <i class="fas fa-images"></i> {{ leaf_count }} <span data-i18n="result_images_analyzed">Images
+                        Analyzed</span>
+                </span>
+                <span class="header-badge">
+                    <i class="fas fa-chart-line"></i> <span data-i18n="result_multi_agg">Multi-Image Aggregation</span>
+                </span>
+                {% if weather %}
+                <span class="header-badge" style="background:rgba(255,255,255,0.25);">
+                    {{ weather.icon }} {{ weather.city }} · {{ weather.temperature }}°C · {{ weather.humidity }}% RH
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f0fe; color: #667eea;">
+                    <i class="fas fa-virus"></i>
+                </div>
+                <div class="stat-info">
+                    <h4 data-i18n="result_stat_disease">Primary Disease</h4>
+                    <p>{{ disease_name }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff3e0; color: #ff9800;">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <div class="stat-info">
+                    <h4 data-i18n="result_stat_pest">Associated Pest</h4>
+                    <p>{{ pest_name }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon"
+                    style="background: {% if overall_risk == 'LOW' %}#e8f5e9; color: #56ab2f{% elif overall_risk == 'MODERATE' %}#fff3e0; color: #ff9800{% elif overall_risk == 'HIGH' %}#ffebee; color: #ff416c{% else %}#fce4ec; color: #dc3545{% endif %};">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h4 data-i18n="result_stat_risk">Overall Risk</h4>
+                    <p class="value-large">{{ overall_risk }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f5e9; color: #56ab2f;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h4 data-i18n="result_stat_days">Days to Critical</h4>
+                    <p class="value-large">{{ outbreak_days }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if weather %}
+        <!-- ══ WEATHER IMPACT ON PREDICTION ══════════════════════════════════ -->
+        <div style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+                    border-radius: 18px; padding: 24px 28px; margin-bottom: 28px; color: white;
+                    box-shadow: 0 10px 40px rgba(44,83,100,0.35); position:relative; overflow:hidden;">
+
+            <!-- decorative orb -->
+            <div style="position:absolute;top:-50px;right:-50px;width:180px;height:180px;
+                        border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;"></div>
+
+            <!-- header row -->
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">
+                <div style="font-size:44px;line-height:1;filter:drop-shadow(0 0 8px rgba(255,220,100,0.5));">
+                    {{ weather.icon }}
+                </div>
+                <div style="flex:1;">
+                    <h3 style="margin:0;font-size:18px;font-weight:800;color:#e0f2fe;">
+                        🌤️ Live Weather at {{ weather.city }}{% if weather.country %}, {{ weather.country }}{% endif %}
+                    </h3>
+                    <p style="margin:4px 0 0;font-size:13px;color:#93c5fd;">
+                        {{ weather.description }} &nbsp;·&nbsp; 📅 {{ weather.fetched_at }}
+                    </p>
+                </div>
+                <span style="background:#16a34a;color:white;font-size:12px;font-weight:700;
+                             padding:5px 14px;border-radius:20px;white-space:nowrap;">
+                    🤖 AI Weather-Adjusted Prediction
+                </span>
+            </div>
+
+            <!-- weather metrics grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin-bottom:20px;">
+                <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:28px;font-weight:800;color:#fbbf24;">{{ weather.temperature }}°C</div>
+                    <div style="font-size:11px;color:#7dd3fc;margin-top:4px;">🌡️ Temperature</div>
+                    <div style="font-size:10px;color:#475569;">{{ weather.temp_min }}° – {{ weather.temp_max }}°</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:28px;font-weight:800;color:#38bdf8;">{{ weather.humidity }}%</div>
+                    <div style="font-size:11px;color:#7dd3fc;margin-top:4px;">💧 Humidity</div>
+                    <div style="font-size:10px;color:#475569;">Relative humidity</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:28px;font-weight:800;color:#34d399;">{{ weather.daily_rain }}mm</div>
+                    <div style="font-size:11px;color:#7dd3fc;margin-top:4px;">🌧️ Today's Rain</div>
+                    <div style="font-size:10px;color:#475569;">{{ weather.rain_prob|int }}% chance</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:28px;font-weight:800;color:#c084fc;">{{ weather.wind_speed }} km/h</div>
+                    <div style="font-size:11px;color:#7dd3fc;margin-top:4px;">🌬️ Wind Speed</div>
+                    <div style="font-size:10px;color:#475569;">Max {{ weather.wind_max }} km/h</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center;">
+                    <div style="font-size:28px;font-weight:800;color:#94a3b8;">{{ weather.cloud_cover|int }}%</div>
+                    <div style="font-size:11px;color:#7dd3fc;margin-top:4px;">☁️ Cloud Cover</div>
+                    <div style="font-size:10px;color:#475569;">Today</div>
+                </div>
+            </div>
+
+            {% if weather_notes %}
+            <!-- weather modifier notes -->
+            <div style="background:rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;">
+                <div style="font-size:13px;font-weight:700;color:#fcd34d;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-bolt"></i> Weather Factors That Adjusted Your Prediction:
+                </div>
+                {% for note in weather_notes %}
+                <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;
+                            border-bottom:1px solid rgba(255,255,255,0.07);">
+                    <div style="width:6px;height:6px;border-radius:50%;background:#fbbf24;
+                                margin-top:6px;flex-shrink:0;"></div>
+                    <span style="font-size:13px;color:#cbd5e1;line-height:1.5;">{{ note }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="background:rgba(255,255,255,0.07);border-radius:12px;padding:12px 18px;
+                        font-size:13px;color:#86efac;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-check-circle"></i>
+                Current weather conditions are normal — no adjustments were made to the base prediction.
+            </div>
+            {% endif %}
+        </div>
+        <!-- ══ END WEATHER IMPACT ═══════════════════════════════════════════ -->
+        {% endif %}
+
+        <!-- Main Results Grid -->
+        <div class="results-grid">
+            <!-- Disease Analysis Card -->
+            <div class="result-card">
+                <div class="card-header">
+                    <i class="fas fa-virus"></i>
+                    <h3 data-i18n="result_card_disease">Disease Analysis</h3>
+                </div>
+
+                <div class="disease-display">
+                    <div class="disease-name">{{ disease_name }}</div>
+
+                    <div class="confidence-meter">
+                        <div class="confidence-label">
+                            <span data-i18n="result_det_confidence">Detection Confidence</span>
+                            <span>{{ disease_prob }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ disease_prob }}%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="confidence-percentage">{{ disease_prob }}<span data-i18n="result_accurate">%
+                            Accurate</span></div>
+
+                    <div class="confidence-details">
+                        <div class="confidence-detail-item">
+                            <div class="label" data-i18n="result_disease_risk_lbl">Disease Risk Level</div>
+                            <div class="value"
+                                style="color: {% if disease_risk == 'LOW' %}#56ab2f{% elif disease_risk == 'MODERATE' %}#ff9800{% elif disease_risk == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %};">
+                                {{ disease_risk }}</div>
+                        </div>
+                        <div class="confidence-detail-item">
+                            <div class="label" data-i18n="result_confidence_score">Confidence Score</div>
+                            <div class="value">{{ disease_prob }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment Card -->
+            <div class="result-card">
+                <div class="card-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3 data-i18n="result_card_risk">Risk Assessment</h3>
+                </div>
+
+                <div class="risk-display">
+                    <div class="risk-badge-large risk-{{ overall_risk.lower() }}">
+                        {{ overall_risk }} RISK
+                    </div>
+
+                    <div class="risk-factor">
+                        Based on disease ({{ disease_risk }}) and pest ({{ pest_risk }}) analysis
+                    </div>
+
+                    <div class="outbreak-timer">
+                        <div class="days">{{ outbreak_days }} Days</div>
+                        <div class="label" data-i18n="result_until_critical">Until Critical Stage</div>
+                    </div>
+
+                    <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                        <i class="fas fa-info-circle"></i> <span data-i18n="result_take_action">Take action
+                            within</span> {{ outbreak_days }} <span data-i18n="result_days_prevent">days to prevent crop
+                            loss</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pest Analysis Card -->
+            <div class="result-card">
+                <div class="card-header">
+                    <i class="fas fa-bug"></i>
+                    <h3 data-i18n="result_card_pest">Pest Analysis</h3>
+                </div>
+
+                <div class="pest-display">
+                    <div class="pest-name">{{ pest_name }}</div>
+
+                    <div class="confidence-meter">
+                        <div class="confidence-label">
+                            <span>Detection Confidence</span>
+                            <span>{{ pest_prob }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"
+                                style="width: {{ pest_prob }}%; background: linear-gradient(90deg, #ff9800, #f44336);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pest-confidence">{{ pest_prob }}% Accurate</div>
+
+                    <div class="pest-details">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Pest Risk Level:</span>
+                            <span
+                                style="font-weight: 600; color: {% if pest_risk == 'LOW' %}#56ab2f{% elif pest_risk == 'MODERATE' %}#ff9800{% elif pest_risk == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %};">{{
+                                pest_risk }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Confidence:</span>
+                            <span style="font-weight: 600;">{{ pest_prob }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Progression Timeline -->
+            <div class="result-card timeline-card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i>
+                    <h3 data-i18n="result_card_timeline">Risk Progression Timeline</h3>
+                </div>
+
+                <div class="timeline-container">
+                    {% for day in risk_progression %}
+                    <div class="timeline-bar-container">
+                        <div class="timeline-bar-wrapper">
+                            <div class="timeline-bar"
+                                style="height: {{ day.probability }}px; background: {% if day.risk_level == 'LOW' %}#56ab2f{% elif day.risk_level == 'MODERATE' %}#ff9800{% elif day.risk_level == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %};"
+                                title="Day {{ day.day }}: {{ day.risk_level }} Risk ({{ day.probability }}%)">
+                            </div>
+                        </div>
+                        <div class="timeline-day">Day {{ day.day }}</div>
+                        <div class="timeline-risk-badge"
+                            style="background: {% if day.risk_level == 'LOW' %}#e8f5e9; color: #56ab2f{% elif day.risk_level == 'MODERATE' %}#fff3e0; color: #ff9800{% elif day.risk_level == 'HIGH' %}#ffebee; color: #ff416c{% else %}#fce4ec; color: #dc3545{% endif %};">
+                            {{ day.risk_level }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <i class="fas fa-info-circle"></i>
+                    <p><strong>Critical Day: Day {{ outbreak_days }}</strong> - Risk becomes CRITICAL at {{
+                        risk_progression[-1].probability }}%. Take preventive action before this day.</p>
+                </div>
+            </div>
+
+            <!-- Recommendations / Damage Alert -->
+            {% if overall_risk in ['HIGH', 'CRITICAL'] %}
+            <!-- HIGH / CRITICAL → Critical Damage Alert -->
+            <div class="result-card recommendations-card" id="damage-alert-card"
+                style="border: 2px solid #dc3545; background: linear-gradient(135deg,#fff5f5,#fff1f1);">
+
+                <!-- Pulsing siren top bar -->
+                <div style="background:linear-gradient(90deg,#dc3545,#ff416c,#dc3545);
+                            background-size:200% 100%;
+                            animation:siren-gradient 1.5s linear infinite;
+                            padding:12px 24px;
+                            display:flex;align-items:center;gap:12px;border-radius:8px 8px 0 0;
+                            margin:-1px -1px 0 -1px;">
+                    <i class="fas fa-radiation" style="color:#fff;font-size:20px;
+                       animation:spin 2s linear infinite;"></i>
+                    <span style="color:#fff;font-weight:800;font-size:16px;letter-spacing:1px;"
+                        data-i18n="result_critical_alert">
+                        🚨 CRITICAL DAMAGE ALERT
+                    </span>
+                    <i class="fas fa-radiation" style="color:#fff;font-size:20px;margin-left:auto;
+                       animation:spin 2s linear infinite reverse;"></i>
+                </div>
+
+                <div style="padding:28px;">
+                    <!-- Main message -->
+                    <div style="text-align:center;margin-bottom:28px;">
+                        <div style="font-size:64px;margin-bottom:12px;
+                                    animation:pulse 1.5s ease-in-out infinite;">☠️</div>
+                        <h2 style="font-size:24px;font-weight:800;color:#dc3545;margin:0 0 10px;"
+                            data-i18n="result_irreversible">
+                            This Crop is Irreversibly Damaged
+                        </h2>
+                        <p style="font-size:15px;color:#6b7280;max-width:560px;margin:0 auto;line-height:1.7;"
+                            data-i18n="result_no_treatment">
+                            The level of disease infection and spread has reached a point where no treatment or
+                            suggestion can reverse the damage. The crop has been completely compromised — further
+                            cultivation of this batch is not viable.
+                        </p>
+                    </div>
+
+                    <!-- Risk info row -->
+                    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:28px;">
+                        <div style="background:#fff;border:2px solid #fca5a5;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:30px;margin-bottom:4px;">🌡️</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;"
+                                data-i18n="result_risk_level">Risk Level</div>
+                            <div style="font-size:18px;font-weight:800;color:#dc3545;">{{ overall_risk }}</div>
+                        </div>
+                        <div style="background:#fff;border:2px solid #fca5a5;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:30px;margin-bottom:4px;">⏰</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;"
+                                data-i18n="result_days_remaining">Days Remaining</div>
+                            <div style="font-size:18px;font-weight:800;color:#dc3545;">{{ outbreak_days }}</div>
+                        </div>
+                        <div style="background:#fff;border:2px solid #fca5a5;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:30px;margin-bottom:4px;">🦠</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;"
+                                data-i18n="result_disease_lbl">Disease</div>
+                            <div style="font-size:14px;font-weight:700;color:#dc3545;">{{ disease_name }}</div>
+                        </div>
+                        {% if brown_critical %}
+                        <div style="background:#fff;border:2px solid #fca5a5;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:30px;margin-bottom:4px;">🍂</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;"
+                                data-i18n="result_brown_area">Brown Area</div>
+                            <div style="font-size:18px;font-weight:800;color:#dc3545;">&gt;50%</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- What to do panel -->
+                    <div style="background:#fff;border:1px solid #fecaca;border-radius:14px;padding:20px 24px;">
+                        <h4 style="color:#b91c1c;margin:0 0 14px;font-size:15px;font-weight:700;"
+                            data-i18n="result_what_to_do">
+                            🔴 What You Should Do Now:
+                        </h4>
+                        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#fee2e2;color:#b91c1c;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">1</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Remove all infected plants immediately.</strong>
+                                    Do not leave them in the field — they will spread disease to healthy plants nearby.
+                                </p>
+                            </div>
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#fee2e2;color:#b91c1c;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">2</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Quarantine the affected area.</strong>
+                                    Prevent movement of tools, water, or people from the infected zone to healthy areas.
+                                </p>
+                            </div>
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#fee2e2;color:#b91c1c;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">3</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Plan for next season.</strong>
+                                    Use disease-resistant seed varieties and apply soil treatment before replanting.
+                                </p>
+                            </div>
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#fee2e2;color:#b91c1c;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">4</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Consult the doctor's report.</strong>
+                                    Our agricultural expert has been notified — await their verified report for next
+                                    steps.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- animations -->
+                <style>
+                    @keyframes siren-gradient {
+                        0% {
+                            background-position: 0% 50%;
+                        }
+
+                        50% {
+                            background-position: 100% 50%;
+                        }
+
+                        100% {
+                            background-position: 0% 50%;
+                        }
+                    }
+
+                    @keyframes spin {
+                        from {
+                            transform: rotate(0deg);
+                        }
+
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+
+                    @keyframes pulse {
+
+                        0%,
+                        100% {
+                            transform: scale(1);
+                        }
+
+                        50% {
+                            transform: scale(1.12);
+                        }
+                    }
+                </style>
+            </div>
+
+            {% else %}
+            <!-- LOW / MODERATE → Doctor advisory card -->
+            <div class="result-card recommendations-card"
+                style="border: 2px solid #7c3aed; background: linear-gradient(135deg,#f5f3ff,#eff6ff);">
+
+                <div style="background:linear-gradient(135deg,#7c3aed,#4f46e5);
+                            padding:14px 24px;
+                            display:flex;align-items:center;gap:12px;border-radius:8px 8px 0 0;
+                            margin:-1px -1px 0 -1px;">
+                    <i class="fas fa-user-md" style="color:#fff;font-size:20px;"></i>
+                    <span style="color:#fff;font-weight:800;font-size:16px;letter-spacing:0.5px;">
+                        🩺 Doctor Advisory
+                    </span>
+                </div>
+
+                <div style="padding:32px;text-align:center;">
+                    <div style="font-size:56px;margin-bottom:16px;">👨‍⚕️</div>
+                    <h2 style="font-size:22px;font-weight:800;color:#4c1d95;margin:0 0 12px;">
+                        Take Precautions as per Doctor's Prescription
+                    </h2>
+                    <p style="font-size:15px;color:#6b7280;max-width:520px;margin:0 auto 28px;line-height:1.7;">
+                        Your crop shows <strong style="color:#7c3aed;">{{ overall_risk }} risk</strong> signs.
+                        An agricultural expert has been notified and will review your report.
+                        Please follow the precautions recommended by the doctor.
+                    </p>
+
+                    <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:28px;">
+                        <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:28px;margin-bottom:4px;">🌡️</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;">Risk
+                                Level</div>
+                            <div style="font-size:18px;font-weight:800;color:#7c3aed;">{{ overall_risk }}</div>
+                        </div>
+                        <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:28px;margin-bottom:4px;">⏰</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;">Days
+                                to Critical</div>
+                            <div style="font-size:18px;font-weight:800;color:#7c3aed;">{{ outbreak_days }}</div>
+                        </div>
+                        <div style="background:#fff;border:2px solid #ddd6fe;border-radius:14px;
+                                    padding:16px 22px;text-align:center;min-width:140px;">
+                            <div style="font-size:28px;margin-bottom:4px;">🦠</div>
+                            <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:1px;">
+                                Disease</div>
+                            <div style="font-size:14px;font-weight:700;color:#7c3aed;">{{ disease_name }}</div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:20px 28px;text-align:left;">
+                        <h4 style="color:#4c1d95;margin:0 0 14px;font-size:15px;font-weight:700;">
+                            ✅ Recommended Steps:
+                        </h4>
+                        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#ede9fe;color:#4c1d95;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">1</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Consult the doctor's report.</strong>
+                                    Wait for the expert's verified PDF report — it will be sent to your email.
+                                </p>
+                            </div>
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#ede9fe;color:#4c1d95;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">2</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Follow the doctor's prescription.</strong>
+                                    Apply treatments, medicines, or measures exactly as advised by our agricultural
+                                    expert.
+                                </p>
+                            </div>
+                            <div style="flex:1;min-width:200px;display:flex;align-items:flex-start;gap:10px;">
+                                <span style="background:#ede9fe;color:#4c1d95;border-radius:50%;
+                                             width:32px;height:32px;display:flex;align-items:center;
+                                             justify-content:center;font-weight:800;flex-shrink:0;">3</span>
+                                <p style="margin:0;color:#374151;font-size:14px;line-height:1.6;">
+                                    <strong>Monitor your crop regularly.</strong>
+                                    Keep observing the affected leaves every 2–3 days and re-upload if conditions
+                                    worsen.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Analyzed Images Gallery -->
+        {% if leaf_images %}
+        <div class="result-card" style="margin-top: 20px;">
+            <div class="card-header">
+                <i class="fas fa-images"></i>
+                <h3>Analyzed Leaf Images ({{ leaf_count }})</h3>
+            </div>
+
+            <div class="image-gallery">
+                {% for leaf in leaf_images %}
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='uploads/' + leaf.filename) }}"
+                        alt="Leaf Image {{ leaf.index }}">
+                    <div class="gallery-label">
+                        <strong>Leaf {{ leaf.index }}</strong><br>
+                        {{ leaf.disease }} ({{ leaf.disease_prob }}%)<br>
+                        <small>{{ leaf.pest }} ({{ leaf.pest_prob }}%)</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ===== MODEL COMPARISON SECTION ===== -->
+        <div class="model-comparison-section">
+            <div class="section-title">
+                <div class="title-icon"><i class="fas fa-chart-bar"></i></div>
+                <h2>Model Performance Comparison</h2>
+            </div>
+            <p class="section-subtitle">How our ST-GNN model stacks up against previous state-of-the-art approaches for
+                plant disease &amp; outbreak prediction</p>
+
+            <!-- Summary Metric Cards -->
+            <div class="comparison-summary-row">
+                <div class="summary-metric-card">
+                    <span class="metric-value">~72%</span>
+                    <span class="metric-label">Avg. Accuracy<br>(Previous Models)</span>
+                </div>
+                <div class="summary-metric-card our-model-highlight">
+                    <span class="metric-value">95%+</span>
+                    <span class="metric-label">Our ST-GNN Accuracy<br><strong>🏆 Best in Class</strong></span>
+                </div>
+                <div class="summary-metric-card">
+                    <span class="metric-value">+23%</span>
+                    <span class="metric-label">Accuracy Gain<br>over Avg. Baseline</span>
+                </div>
+                <div class="summary-metric-card">
+                    <span class="metric-value">6</span>
+                    <span class="metric-label">Competing Models<br>Benchmarked</span>
+                </div>
+                <div class="summary-metric-card">
+                    <span class="metric-value">5</span>
+                    <span class="metric-label">Unique Features<br>Our Model Adds</span>
+                </div>
+            </div>
+
+            <!-- Full Comparison Table -->
+            <div class="cmp-table-wrapper">
+                <table class="cmp-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Model</th>
+                            <th>Accuracy</th>
+                            <th>Multi-Image Input</th>
+                            <th>Spatial Analysis</th>
+                            <th>Pest Detection</th>
+                            <th>Outbreak Prediction</th>
+                            <th>Real-time Speed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Row 1: VGG-16 -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#fff0e0;color:#fd7e14;"><i
+                                            class="fas fa-network-wired"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">VGG-16 CNN</div>
+                                        <div style="font-size:11px;color:#999;">Classic deep CNN</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:71%;background:#fd7e14;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#fd7e14;">71%</span>
+                                </div>
+                            </td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                        </tr>
+                        <!-- Row 2: ResNet-50 -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#e8f5e9;color:#28a745;"><i
+                                            class="fas fa-layer-group"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">ResNet-50</div>
+                                        <div style="font-size:11px;color:#999;">Residual network</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:76%;background:#28a745;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#28a745;">76%</span>
+                                </div>
+                            </td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                        </tr>
+                        <!-- Row 3: EfficientNet-B4 -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#e3f2fd;color:#1976d2;"><i
+                                            class="fas fa-bolt"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">EfficientNet-B4</div>
+                                        <div style="font-size:11px;color:#999;">Scalable CNN</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:80%;background:#1976d2;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#1976d2;">80%</span>
+                                </div>
+                            </td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                        </tr>
+                        <!-- Row 4: Vision Transformer -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#f3e8ff;color:#6f42c1;"><i
+                                            class="fas fa-eye"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">Vision Transformer (ViT)</div>
+                                        <div style="font-size:11px;color:#999;">Attention-based</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:83%;background:#6f42c1;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#6f42c1;">83%</span>
+                                </div>
+                            </td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                        </tr>
+                        <!-- Row 5: PlantVillage CNN -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#fff3e0;color:#e65100;"><i
+                                            class="fas fa-seedling"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">PlantVillage CNN</div>
+                                        <div style="font-size:11px;color:#999;">Domain-specific CNN</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:78%;background:#e65100;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#e65100;">78%</span>
+                                </div>
+                            </td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                        </tr>
+                        <!-- Row 6: LSTM Time-Series -->
+                        <tr>
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar" style="background:#fce4ec;color:#c2185b;"><i
+                                            class="fas fa-wave-square"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;">LSTM Time-Series</div>
+                                        <div style="font-size:11px;color:#999;">Sequential RNN</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill" style="width:65%;background:#c2185b;"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#c2185b;">65%</span>
+                                </div>
+                            </td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="cross-icon"><i class="fas fa-times-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                            <td><span class="partial-icon"><i class="fas fa-adjust"></i></span></td>
+                        </tr>
+                        <!-- Row 7: Our Model (Highlighted) -->
+                        <tr class="our-model-row">
+                            <td>
+                                <div class="model-name-cell">
+                                    <div class="model-avatar"><i class="fas fa-brain"></i></div>
+                                    <div>
+                                        <div style="font-weight:700;color:#764ba2;">AgriGuard ST-GNN
+                                            <span class="winner-badge"><i class="fas fa-trophy"></i> OUR MODEL</span>
+                                        </div>
+                                        <div style="font-size:11px;color:#888;">Spatio-Temporal Graph Neural Network
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="acc-bar-wrap">
+                                    <div class="acc-bar-bg">
+                                        <div class="acc-bar-fill"
+                                            style="width:95%;background:linear-gradient(90deg,#667eea,#764ba2);"></div>
+                                    </div>
+                                    <span class="acc-label" style="color:#667eea;">95%+ <span class="winner-badge"
+                                            style="font-size:9px;"><i class="fas fa-crown"></i> #1</span></span>
+                                </div>
+                            </td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span> <span
+                                    class="winner-badge" style="font-size:9px;">ONLY</span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span> <span
+                                    class="winner-badge" style="font-size:9px;">ONLY</span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span> <span
+                                    class="winner-badge" style="font-size:9px;">ONLY</span></td>
+                            <td><span class="check-icon"><i class="fas fa-check-circle"></i></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Metric-by-Metric Bars -->
+            <div class="metrics-bars-section">
+                <h4><i class="fas fa-chart-line" style="color:#667eea;"></i> Metric-by-Metric Comparison (Best Previous
+                    vs Our Model)</h4>
+                <div class="cmp-legend">
+                    <div class="cmp-legend-item">
+                        <div class="legend-dot prev"></div> Best Previous Model
+                    </div>
+                    <div class="cmp-legend-item">
+                        <div class="legend-dot ours"></div> AgriGuard ST-GNN (Ours)
+                    </div>
+                </div>
+
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Overall Accuracy</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-acc" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-acc" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">83%</span><span class="our-val">95%</span>
+                    </div>
+                </div>
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Disease Detection F1</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-f1" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-f1" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">79%</span><span class="our-val">93%</span>
+                    </div>
+                </div>
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Pest Identification</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-pi" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-pi" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">72%</span><span class="our-val">91%</span>
+                    </div>
+                </div>
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Outbreak Prediction</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-op" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-op" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">58%</span><span class="our-val">89%</span>
+                    </div>
+                </div>
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Spatial Graph Analysis</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-sg" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-sg" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">N/A</span><span class="our-val">94%</span>
+                    </div>
+                </div>
+                <div class="metric-bar-row">
+                    <div class="metric-bar-label">Multi-Image Fusion</div>
+                    <div class="metric-bar-track">
+                        <div class="metric-bar-prev" id="mb-prev-mf" style="width:0%;"></div>
+                        <div class="metric-bar-ours" id="mb-our-mf" style="width:0%;"></div>
+                    </div>
+                    <div class="metric-bar-values"><span class="prev-val">N/A</span><span class="our-val">96%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Note -->
+            <div class="info-box" style="margin-top:28px;">
+                <i class="fas fa-info-circle"></i>
+                <p><strong>About the comparison:</strong> Accuracy figures are derived from published benchmarks on the
+                    PlantVillage dataset and equivalent agricultural disease datasets. Our ST-GNN incorporates
+                    spatio-temporal graph convolutions, enabling capabilities not present in any single prior model
+                    &mdash; multi-image aggregation, spatial outbreak propagation modelling, and joint pest+disease
+                    detection.</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/dashboard" class="btn btn-primary">
+                <i class="fas fa-undo"></i> New Analysis
+            </a>
+            <a href="/history" class="btn btn-outline">
+                <i class="fas fa-history"></i> View History
+            </a>
+            <button onclick="window.print()" class="btn btn-success">
+                <i class="fas fa-print"></i> Print Report
+            </button>
+            {% if prediction_id %}
+            <a href="/download_report/{{ prediction_id }}" class="btn btn-warning">
+                <i class="fas fa-download"></i> Download Report
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- SMS Status -->
+        {% if sms_sent %}
+        <div class="info-box" style="background: #e8f5e9; border-left-color: #56ab2f;">
+            <i class="fas fa-check-circle" style="color: #56ab2f;"></i>
+            <p><strong>📱 SMS Alert Sent!</strong> Outbreak notification has been sent to your registered mobile number.
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Email Status -->
+        {% if email_sent %}
+        <div class="info-box" style="background: #e8f5e9; border-left-color: #16a34a; margin-top: 10px;">
+            <i class="fas fa-envelope" style="color: #16a34a;"></i>
+            <p><strong>📧 Email Alert Sent!</strong> Full analysis report has been emailed to your registered email
+                address.</p>
+        </div>
+        {% endif %}
+
+        {% if doctor_email_sent %}
+        <div class="info-box"
+            style="background: #f5f3ff; border-left-color: #7c3aed; margin-top: 10px; border-left: 4px solid #7c3aed; display:flex; align-items:flex-start; gap:12px;">
+            <i class="fas fa-user-md" style="color: #7c3aed; margin-top:2px; font-size:18px;"></i>
+            <div>
+                <p><strong>🩺 Sent to Doctor for Review!</strong></p>
+                <p style="margin-top:4px; font-size:14px; color:#555;">
+                    An agricultural expert (<strong>hemasravani95@gmail.com</strong>) has been notified with the full
+                    prediction
+                    report, leaf images, and crop-specific suggestions. The doctor will review and either
+                    <strong style="color:#16a34a;">approve</strong> or <strong style="color:#dc2626;">refuse</strong>
+                    the analysis.
+                    If approved, you will receive a <strong>verified PDF report</strong> with doctor's comments to your
+                    registered email.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Timeline bar hover effects
+            const timelineBars = document.querySelectorAll('.timeline-bar');
+            timelineBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function () { this.style.opacity = '0.8'; });
+                bar.addEventListener('mouseleave', function () { this.style.opacity = '1'; });
+            });
+
+            // Animate comparison metric bars on scroll into view
+            const metricBarsData = [
+                { prev: 'mb-prev-acc', our: 'mb-our-acc', prevW: '83%', ourW: '95%' },
+                { prev: 'mb-prev-f1', our: 'mb-our-f1', prevW: '79%', ourW: '93%' },
+                { prev: 'mb-prev-pi', our: 'mb-our-pi', prevW: '72%', ourW: '91%' },
+                { prev: 'mb-prev-op', our: 'mb-our-op', prevW: '58%', ourW: '89%' },
+                { prev: 'mb-prev-sg', our: 'mb-our-sg', prevW: '0%', ourW: '94%' },
+                { prev: 'mb-prev-mf', our: 'mb-our-mf', prevW: '0%', ourW: '96%' },
+            ];
+
+            const compSection = document.querySelector('.metrics-bars-section');
+            if (compSection) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            metricBarsData.forEach(b => {
+                                const prevEl = document.getElementById(b.prev);
+                                const ourEl = document.getElementById(b.our);
+                                if (prevEl) prevEl.style.width = b.prevW;
+                                if (ourEl) ourEl.style.width = b.ourW;
+                            });
+                            observer.disconnect();
+                        }
+                    });
+                }, { threshold: 0.2 });
+                observer.observe(compSection);
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+</body>
+
+</html>

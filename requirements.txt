@@ -1,0 +1,9 @@
+Flask
+tensorflow
+opencv-python
+numpy
+pymongo
+python-dotenv
+twilio
+reportlab
+pillow

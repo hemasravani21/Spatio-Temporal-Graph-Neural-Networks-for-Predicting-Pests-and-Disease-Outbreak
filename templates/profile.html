@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuard | Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Profile Container */
+        .profile-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .profile-cover {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #667eea;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-title {
+            flex: 1;
+        }
+
+        .profile-title h1 {
+            font-size: 36px;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-title p {
+            font-size: 16px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            z-index: 1;
+        }
+
+        .profile-actions .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .profile-actions .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Main Content Grid */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-header h3 {
+            color: #333;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header .badge {
+            background: #e8f0fe;
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Profile Information */
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-radius: 8px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            margin-right: 15px;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-icon {
+            color: #667eea;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .info-item:hover .edit-icon {
+            opacity: 1;
+        }
+
+        /* SMS Status */
+        .sms-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .sms-status.active {
+            background: #e8f5e9;
+            border-left: 4px solid #56ab2f;
+        }
+
+        .sms-status.inactive {
+            background: #ffebee;
+            border-left: 4px solid #ff416c;
+        }
+
+        .sms-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .sms-details {
+            flex: 1;
+        }
+
+        .sms-details h4 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .sms-details p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Edit Form */
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Activity Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 25px;
+            animation: slideIn 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .timeline-item:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .timeline-item:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .timeline-item:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .timeline-item:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .timeline-item:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 8px;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateX(5px);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .timeline-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .timeline-body {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-risk {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-card h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        /* Notification List */
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content p {
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+
+        .notification-time {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .notification-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-cover {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-layout">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            <i
+                class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="/dashboard" class="navbar-brand">
+                <i class="fas fa-leaf"></i>
+                <span data-i18n="nav_brand">AgriGuard</span>
+            </a>
+
+            <div class="navbar-user">
+                <div class="user-info">
+                    <h3><span data-i18n="nav_welcome">Welcome, </span>{{ user }}</h3>
+                    <p><i class="fas fa-user-circle"></i> <span data-i18n="prof_title">Profile Settings</span></p>
+                </div>
+                <!-- Language Toggle -->
+                <button class="lang-toggle-btn" onclick="toggleLanguage()" title="Switch language"
+                    style="display:inline-flex;align-items:center;gap:0;background:#f0f0f8;border:2px solid #667eea;border-radius:50px;padding:0;cursor:pointer;font-size:13px;font-weight:600;overflow:hidden;transition:box-shadow 0.2s;margin-right:10px;"
+                    onmouseover="this.style.boxShadow='0 0 0 3px rgba(102,126,234,0.25)'"
+                    onmouseout="this.style.boxShadow='none'">
+                    <span class="lang-en"
+                        style="padding:6px 13px;color:#667eea;font-weight:700;opacity:1;transition:all 0.2s;">EN</span>
+                    <span style="color:#aaa;font-size:11px;">|</span>
+                    <span class="lang-te"
+                        style="padding:6px 13px;color:#667eea;font-weight:400;opacity:0.55;transition:all 0.2s;">తె</span>
+                </button>
+                <a href="/dashboard" class="btn btn-primary" style="padding: 8px 20px; margin-right: 10px;">
+                    <i class="fas fa-tachometer-alt"></i> <span data-i18n="nav_history">Dashboard</span>
+                </a>
+                <a href="/logout" class="btn btn-danger" style="padding: 8px 20px;">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="nav_logout">Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-cover">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-title">
+                    <h1>{{ user_data.first_name }} {{ user_data.last_name }}</h1>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i> Member since {{ user_data.created_at.strftime('%B %Y') if
+                        user_data.created_at else '2024' }}
+                        <span class="profile-badge">
+                            <i class="fas fa-star"></i>
+                            {% if user_data.total_predictions > 50 %}Expert
+                            {% elif user_data.total_predictions > 20 %}Advanced
+                            {% elif user_data.total_predictions > 5 %}Regular
+                            {% else %}New Member
+                            {% endif %}
+                        </span>
+                    </p>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-success" onclick="showEditForm()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-primary" onclick="testSMS()" {% if not sms_enabled %}disabled{% endif %}>
+                        <i class="fas fa-sms"></i> Test SMS
+                    </button>
+                    <button class="btn" style="background: linear-gradient(135deg,#16a34a,#15803d); color:white;"
+                        onclick="testEmail()">
+                        <i class="fas fa-envelope"></i> Test Email
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f0fe; color: #667eea;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ user_data.total_predictions|default(0) }}</h3>
+                    <p data-i18n="stat_total">Total Analyses</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff3e0; color: #ff9800;">
+                    <i class="fas fa-virus"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ disease_count|default(0) }}</h3>
+                    <p data-i18n="stat_diseases">Diseases Detected</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #ffebee; color: #ff416c;">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ pest_count|default(0) }}</h3>
+                    <p data-i18n="prof_stat_pests">Pests Found</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #e8f5e9; color: #56ab2f;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ this_month_count|default(0) }}</h3>
+                    <p data-i18n="stat_month">This Month</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="profile-grid">
+            <!-- Personal Information -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-circle"></i> <span data-i18n="prof_personal_info">Personal
+                            Information</span></h3>
+                    <span class="badge" data-i18n="prof_private">Private</span>
+                </div>
+
+                <ul class="info-list">
+                    <li class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label" data-i18n="prof_name">Full Name</div>
+                            <div class="info-value">
+                                {{ user_data.first_name }} {{ user_data.last_name }}
+                                <i class="fas fa-edit edit-icon" onclick="editField('name')"></i>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label" data-i18n="prof_email_addr">Email Address</div>
+                            <div class="info-value">
+                                {{ user_data.email }}
+                                <i class="fas fa-edit edit-icon" onclick="editField('email')"></i>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label" data-i18n="prof_phone_num">Phone Number</div>
+                            <div class="info-value">
+                                {{ user_data.phone|default('Not provided', true) }}
+                                <i class="fas fa-edit edit-icon" onclick="editField('phone')"></i>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label" data-i18n="prof_farm_type">Farm Type</div>
+                            <div class="info-value">
+                                {{ user_data.farm_type|title|default('Not specified', true) }}
+                                <i class="fas fa-edit edit-icon" onclick="editField('farm_type')"></i>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label" data-i18n="prof_member_since">Member Since</div>
+                            <div class="info-value">
+                                {{ user_data.created_at.strftime('%B %d, %Y') if user_data.created_at else 'January 1,
+                                2024' }}
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- SMS Status -->
+                <div class="sms-status {% if user_data.phone %}active{% else %}inactive{% endif %}">
+                    <div class="sms-icon"
+                        style="background: {% if user_data.phone %}#56ab2f{% else %}#ff416c{% endif %}; color: white;">
+                        <i
+                            class="fas fa-{% if user_data.phone %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    </div>
+                    <div class="sms-details">
+                        <h4 data-i18n="prof_sms_notif">SMS Notifications</h4>
+                        <p>
+                            {% if user_data.phone %}
+                            Active on {{ user_data.phone }}
+                            {% else %}
+                            No phone number registered
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% if not user_data.phone %}
+                    <button class="btn btn-primary btn-sm" onclick="editField('phone')">
+                        Add Now
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Edit Form -->
+                <div class="edit-form" id="editForm">
+                    <h4 style="margin-bottom: 15px; color: #333;">
+                        <i class="fas fa-edit"></i> <span data-i18n="prof_edit_info">Edit Information</span>
+                    </h4>
+                    <form id="profileEditForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="prof_first_name">First Name</label>
+                                <input type="text" id="edit_first_name" class="form-control"
+                                    value="{{ user_data.first_name }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="prof_last_name">Last Name</label>
+                                <input type="text" id="edit_last_name" class="form-control"
+                                    value="{{ user_data.last_name }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="prof_email">Email</label>
+                            <input type="email" id="edit_email" class="form-control" value="{{ user_data.email }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="prof_phone">Phone Number</label>
+                            <input type="tel" id="edit_phone" class="form-control"
+                                value="{{ user_data.phone|default('', true) }}" placeholder="+1234567890">
+                            <small class="form-text">Include country code (e.g., +1 for US, +91 for India)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="prof_farm_type">Farm Type</label>
+                            <select id="edit_farm_type" class="form-control">
+                                <option value="organic" {% if user_data.farm_type=='organic' %}selected{% endif %}>
+                                    Organic Farming</option>
+                                <option value="commercial" {% if user_data.farm_type=='commercial' %}selected{% endif
+                                    %}>Commercial Farming</option>
+                                <option value="subsistence" {% if user_data.farm_type=='subsistence' %}selected{% endif
+                                    %}>Subsistence Farming</option>
+                                <option value="greenhouse" {% if user_data.farm_type=='greenhouse' %}selected{% endif
+                                    %}>Greenhouse</option>
+                                <option value="hydroponics" {% if user_data.farm_type=='hydroponics' %}selected{% endif
+                                    %}>Hydroponics</option>
+                                <option value="other" {% if user_data.farm_type=='other' %}selected{% endif %}>Other
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-success" onclick="saveProfile()">
+                                <i class="fas fa-save"></i> <span data-i18n="prof_save">Save Changes</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="hideEditForm()">
+                                <i class="fas fa-times"></i> <span data-i18n="prof_cancel">Cancel</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> <span data-i18n="prof_recent_activity">Recent Activity</span>
+                    </h3>
+                    <a href="/history" class="badge" style="text-decoration: none;" data-i18n="recent_view_all">View
+                        All</a>
+                </div>
+
+                <div class="timeline">
+                    {% if recent_activities %}
+                    {% for activity in recent_activities %}
+                    <div class="timeline-item">
+                        <div class="timeline-icon"
+                            style="border-color: {% if activity.risk_level == 'LOW' %}#56ab2f{% elif activity.risk_level == 'MODERATE' %}#ffa726{% elif activity.risk_level == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %};">
+                            <i class="fas fa-{% if activity.risk_level == 'LOW' %}check{% elif activity.risk_level == 'MODERATE' %}exclamation{% elif activity.risk_level == 'HIGH' %}exclamation-triangle{% else %}skull{% endif %}"
+                                style="color: {% if activity.risk_level == 'LOW' %}#56ab2f{% elif activity.risk_level == 'MODERATE' %}#ffa726{% elif activity.risk_level == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %}; font-size: 14px;"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-title">{{ activity.crop }} Analysis</span>
+                                <span class="timeline-time">{{ activity.created_at[:10] if activity.created_at else
+                                    'Just now' }}</span>
+                            </div>
+                            <div class="timeline-body">
+                                <i class="fas fa-map-marker-alt"></i> {{ activity.place }}<br>
+                                <i class="fas fa-virus"></i> {{ activity.disease_name }} ({{ activity.disease_prob
+                                }}%)<br>
+                                <i class="fas fa-bug"></i> {{ activity.pest_name }} ({{ activity.pest_prob }}%)
+                            </div>
+                            <div>
+                                <span class="timeline-risk"
+                                    style="background: {% if activity.risk_level == 'LOW' %}#e8f5e9{% elif activity.risk_level == 'MODERATE' %}#fff3e0{% elif activity.risk_level == 'HIGH' %}#ffebee{% else %}#fce4ec{% endif %}; color: {% if activity.risk_level == 'LOW' %}#56ab2f{% elif activity.risk_level == 'MODERATE' %}#ffa726{% elif activity.risk_level == 'HIGH' %}#ff416c{% else %}#dc3545{% endif %};">
+                                    {{ activity.risk_level }} RISK
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-seedling" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+                        <p data-i18n="prof_no_activity">No recent activity</p>
+                        <p style="font-size: 13px;" data-i18n="prof_no_activity_hint">Start analyzing your crops to see
+                            activity here</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-container">
+            <!-- Disease Distribution -->
+            <div class="chart-card">
+                <h4><i class="fas fa-chart-pie" style="color: #667eea;"></i> <span
+                        data-i18n="prof_chart_disease">Disease Distribution</span></h4>
+                <div class="chart-container">
+                    <canvas id="diseaseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Risk Levels -->
+            <div class="chart-card">
+                <h4><i class="fas fa-chart-bar" style="color: #ff416c;"></i> <span data-i18n="prof_chart_risk">Risk
+                        Level Analysis</span></h4>
+                <div class="chart-container">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Activity -->
+            <div class="chart-card">
+                <h4><i class="fas fa-chart-line" style="color: #56ab2f;"></i> <span
+                        data-i18n="prof_chart_monthly">Monthly Analysis</span></h4>
+                <div class="chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="profile-card">
+            <div class="card-header">
+                <h3><i class="fas fa-bell"></i> <span data-i18n="prof_recent_notif">Recent Notifications</span></h3>
+                <span class="badge">{{ user_data.recent_notifications|length }} <span
+                        data-i18n="prof_notif_new">New</span></span>
+            </div>
+
+            <div class="notification-list">
+                {% if user_data.recent_notifications %}
+                {% for notif in user_data.recent_notifications %}
+                <div class="notification-item">
+                    <div class="notification-icon"
+                        style="background: {% if notif.status == 'sent' %}#e8f5e9{% else %}#ffebee{% endif %};">
+                        <i class="fas fa-{% if notif.status == 'sent' %}check-circle{% else %}exclamation-circle{% endif %}"
+                            style="color: {% if notif.status == 'sent' %}#56ab2f{% else %}#ff416c{% endif %};"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p>{{ notif.message[:50] }}...</p>
+                        <span class="notification-time">{{ notif.sent_at[:10] if notif.sent_at else 'Just now' }}</span>
+                    </div>
+                    <div class="notification-status"
+                        style="background: {% if notif.status == 'sent' %}#56ab2f{% else %}#ff416c{% endif %};"></div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="text-align: center; padding: 30px; color: #666;">
+                    <i class="fas fa-bell-slash" style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i>
+                    <p data-i18n="prof_no_notif">No notifications yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Test Modal -->
+    <div class="modal" id="smsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-sms" style="color: #667eea;"></i> Test SMS</h3>
+            </div>
+            <div class="modal-body">
+                <p>A test message will be sent to:</p>
+                <p style="font-weight: 600; font-size: 18px; color: #333;">{{ user_data.phone }}</p>
+                <p style="color: #666; margin-top: 10px;">This will confirm that your SMS notifications are working
+                    properly.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="sendTestSMS()">
+                    <i class="fas fa-paper-plane"></i> Send Test
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Test Modal -->
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-envelope" style="color: #16a34a;"></i> Test Email</h3>
+            </div>
+            <div class="modal-body">
+                <p>A test email will be sent to:</p>
+                <p style="font-weight: 600; font-size: 18px; color: #333;">{{ user_data.email }}</p>
+                <p style="color: #666; margin-top: 10px;">This will confirm that your email notifications are working
+                    properly.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background: linear-gradient(135deg,#16a34a,#15803d); color:white;"
+                    onclick="sendTestEmail()">
+                    <i class="fas fa-paper-plane"></i> Send Test
+                </button>
+                <button class="btn btn-secondary" onclick="closeEmailModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart Data
+        const diseaseData = {{ disease_chart_data| tojson | safe }};
+        const riskData = {{ risk_chart_data| tojson | safe }};
+        const monthlyData = {{ monthly_chart_data| tojson | safe }};
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function () {
+            // Disease Distribution Chart
+            if (document.getElementById('diseaseChart')) {
+                new Chart(document.getElementById('diseaseChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: diseaseData.labels,
+                        datasets: [{
+                            data: diseaseData.values,
+                            backgroundColor: [
+                                '#667eea',
+                                '#ff416c',
+                                '#56ab2f',
+                                '#ffa726',
+                                '#dc3545',
+                                '#6c757d'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Risk Level Chart
+            if (document.getElementById('riskChart')) {
+                new Chart(document.getElementById('riskChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: riskData.labels,
+                        datasets: [{
+                            label: 'Number of Analyses',
+                            data: riskData.values,
+                            backgroundColor: [
+                                '#56ab2f',
+                                '#ffa726',
+                                '#ff416c',
+                                '#dc3545'
+                            ],
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Monthly Activity Chart
+            if (document.getElementById('monthlyChart')) {
+                new Chart(document.getElementById('monthlyChart'), {
+                    type: 'line',
+                    data: {
+                        labels: monthlyData.labels,
+                        datasets: [{
+                            label: 'Analyses',
+                            data: monthlyData.values,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#667eea',
+                            pointBorderColor: 'white',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Profile Editing Functions
+        function showEditForm() {
+            document.getElementById('editForm').classList.add('active');
+            document.querySelector('.profile-actions').style.display = 'none';
+        }
+
+        function hideEditForm() {
+            document.getElementById('editForm').classList.remove('active');
+            document.querySelector('.profile-actions').style.display = 'flex';
+        }
+
+        function editField(field) {
+            showEditForm();
+            // Highlight the specific field
+            const fieldMap = {
+                'name': 'edit_first_name',
+                'email': 'edit_email',
+                'phone': 'edit_phone',
+                'farm_type': 'edit_farm_type'
+            };
+
+            if (fieldMap[field]) {
+                document.getElementById(fieldMap[field]).focus();
+            }
+        }
+
+        function saveProfile() {
+            const formData = {
+                first_name: document.getElementById('edit_first_name').value,
+                last_name: document.getElementById('edit_last_name').value,
+                email: document.getElementById('edit_email').value,
+                phone: document.getElementById('edit_phone').value,
+                farm_type: document.getElementById('edit_farm_type').value
+            };
+
+            // Show loading state
+            const saveBtn = document.querySelector('#profileEditForm .btn-success');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+
+            // Send update request
+            fetch('/update_profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        showNotification('Profile updated successfully!', 'success');
+
+                        // Reload page after 1 second
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        throw new Error(data.error || 'Update failed');
+                    }
+                })
+                .catch(error => {
+                    showNotification(error.message, 'error');
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                });
+        }
+
+        // SMS Functions
+        function testSMS() {
+            document.getElementById('smsModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('smsModal').classList.remove('active');
+        }
+
+        function sendTestSMS() {
+            const sendBtn = document.querySelector('#smsModal .btn-success');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            sendBtn.disabled = true;
+
+            fetch('/send_test_sms', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Test SMS sent successfully!', 'success');
+                        closeModal();
+                    } else {
+                        throw new Error(data.error || 'Failed to send SMS');
+                    }
+                })
+                .catch(error => {
+                    showNotification(error.message, 'error');
+                    sendBtn.innerHTML = originalText;
+                    sendBtn.disabled = false;
+                });
+        }
+
+        // Notification System
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Auto-refresh data
+        function refreshStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Update stats in real-time if needed
+                    console.log('Stats refreshed:', data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Refresh every 30 seconds
+        setInterval(refreshStats, 30000);
+
+        // Email Functions
+        function testEmail() {
+            document.getElementById('emailModal').classList.add('active');
+        }
+
+        function closeEmailModal() {
+            document.getElementById('emailModal').classList.remove('active');
+        }
+
+        function sendTestEmail() {
+            const sendBtn = document.querySelector('#emailModal .btn:not(.btn-secondary)');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            sendBtn.disabled = true;
+
+            fetch('/send_test_email', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Test email sent successfully!', 'success');
+                        closeEmailModal();
+                    } else {
+                        throw new Error(data.error || 'Failed to send email');
+                    }
+                })
+                .catch(error => {
+                    showNotification(error.message, 'error');
+                    sendBtn.innerHTML = originalText;
+                    sendBtn.disabled = false;
+                });
+        }
+
+        // Click outside modal to close
+        window.onclick = function (event) {
+            const smsModal = document.getElementById('smsModal');
+            const emailModal = document.getElementById('emailModal');
+            if (event.target == smsModal) closeModal();
+            if (event.target == emailModal) closeEmailModal();
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/translations.js') }}"></script>
+</body>
+
+</html>

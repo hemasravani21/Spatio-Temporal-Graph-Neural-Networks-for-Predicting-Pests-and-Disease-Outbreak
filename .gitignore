@@ -1,0 +1,55 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.pyc
+
+# Large image datasets (too large for GitHub - use Git LFS or external storage)
+dataset/plantvillage dataset/
+dataset/maizepictueres/
+dataset/classification/
+
+# Uploads folder (user-uploaded images)
+uploads/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables (contains secrets)
+.env
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# VS Code settings
+.vscode/
+
+# Trained model files (large binaries - optional: use Git LFS)
+# models/*.h5
+# models/*.pkl
+# models/*.pt
+# models/*.pth
+
+# Temporary files
+*.tmp
+~$*
+*.~*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+models/*.keras
+models/*.h5

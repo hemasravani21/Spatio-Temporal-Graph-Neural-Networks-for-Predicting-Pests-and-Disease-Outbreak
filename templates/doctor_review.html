@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriGuard | Doctor Review Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      min-height: 100vh;
+      color: #1f2937;
+    }
+    .header {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header-logo { font-size: 26px; font-weight: 800; color: #a78bfa; }
+    .header-sub  { font-size: 13px; color: rgba(255,255,255,0.6); margin-top:2px; }
+    .doctor-badge {
+      margin-left: auto;
+      background: linear-gradient(135deg,#7c3aed,#4f46e5);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .container { max-width: 1050px; margin: 0 auto; padding: 30px 20px 60px; }
+
+    /* ─ Page title ─ */
+    .page-title {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 24px 30px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .page-title-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg,#7c3aed,#4f46e5);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .page-title h1 { color: #fff; font-size: 22px; font-weight: 700; }
+    .page-title p  { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 4px; }
+
+    /* ─ Card ─ */
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid #f3f4f6;
+    }
+    .card-title i { color: #7c3aed; }
+
+    /* ─ Info table ─ */
+    .info-table { width: 100%; border-collapse: collapse; }
+    .info-table tr:not(:last-child) td { border-bottom: 1px solid #f3f4f6; }
+    .info-table td { padding: 9px 12px; font-size: 14px; }
+    .info-table td:first-child { color: #6b7280; width: 40%; }
+    .info-table td:last-child  { font-weight: 600; color: #111827; }
+
+    /* ─ Risk badge ─ */
+    .risk-badge {
+      display: inline-block;
+      padding: 5px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #fff;
+    }
+    .risk-LOW      { background: #22c55e; }
+    .risk-MODERATE { background: #f59e0b; }
+    .risk-HIGH     { background: #f97316; }
+    .risk-CRITICAL { background: #ef4444; }
+
+    /* ─ Image gallery ─ */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+      margin-top: 6px;
+    }
+    .image-grid img {
+      width: 100%; height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #e5e7eb;
+      transition: transform 0.2s;
+    }
+    .image-grid img:hover { transform: scale(1.05); }
+
+    /* ─ Suggestion chips ─ */
+    .sugg-category { margin-bottom: 16px; }
+    .sugg-label {
+      font-size: 13px; font-weight: 700; color: #7c3aed;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .sugg-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sugg-chip {
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      color: #4c1d95;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .sugg-chip.organic  { background:#f0fdf4; border-color:#bbf7d0; color:#166534; }
+    .sugg-chip.urgent   { background:#fff1f2; border-color:#fecdd3; color:#9f1239; }
+    .sugg-chip.chemical { background:#f5f3ff; border-color:#ddd6fe; color:#4c1d95; }
+    .sugg-chip.prevent  { background:#eff6ff; border-color:#bfdbfe; color:#1e40af; }
+
+    /* ─ Doctor comments area ─ */
+    .comments-box {
+      background: linear-gradient(135deg,#f5f3ff,#eff6ff);
+      border: 2px solid #c4b5fd;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .comments-box label {
+      display: block;
+      font-weight: 700;
+      font-size: 16px;
+      color: #4c1d95;
+      margin-bottom: 6px;
+    }
+    .comments-box .sub-label {
+      font-size: 13px; color: #7c3aed; margin-bottom: 14px;
+    }
+    .comments-textarea {
+      width: 100%;
+      min-height: 160px;
+      border: 2px solid #ddd6fe;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: #1f2937;
+      background: #fff;
+      resize: vertical;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .comments-textarea:focus { border-color: #7c3aed; }
+    .comments-textarea::placeholder { color: #9ca3af; }
+
+    /* ─ Action buttons ─ */
+    .action-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .btn {
+      padding: 14px 36px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    .btn-approve {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+    }
+    .btn-approve:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(34,197,94,0.45); }
+    .btn-refuse {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+    }
+    .btn-refuse:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(239,68,68,0.45); }
+
+    /* ─ Helper info box ─ */
+    .info-box {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 20px;
+    }
+    .info-box i { color: #a78bfa; margin-top: 2px; }
+
+    @media (max-width: 600px) {
+      .header { padding: 14px 18px; }
+      .container { padding: 20px 14px 40px; }
+      .btn { padding: 12px 24px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <i class="fas fa-leaf" style="color:#a78bfa;font-size:22px;"></i>
+  <div>
+    <div class="header-logo">AgriGuard AI</div>
+    <div class="header-sub">Doctor Review Portal</div>
+  </div>
+  <div class="doctor-badge"><i class="fas fa-user-md"></i> Expert Review Mode</div>
+</div>
+
+<div class="container">
+
+  <div class="page-title">
+    <div class="page-title-icon">🩺</div>
+    <div>
+      <h1>Crop Analysis Review</h1>
+      <p>Review the prediction details below, add your expert comments, then approve or refuse.</p>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <i class="fas fa-info-circle"></i>
+    <span>You are reviewing a crop analysis submitted by <strong style="color:#fff;">
+    {{ farmer.get('first_name','') }} {{ farmer.get('last_name','') or farmer.get('username','Farmer') }}</strong>.
+    Your comments will be included in the final PDF report sent to the farmer.</span>
+  </div>
+
+  <!-- Farmer Info -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-user-circle"></i> Farmer Details</div>
+    <table class="info-table">
+      <tr><td>Name</td><td>{{ farmer.get('first_name','') }} {{ farmer.get('last_name','') or '' }}</td></tr>
+      <tr><td>Email</td><td>{{ farmer.get('email','N/A') }}</td></tr>
+      <tr><td>Phone</td><td>{{ farmer.get('phone','N/A') }}</td></tr>
+      <tr><td>Location</td><td>{{ pred.get('place','N/A') }}</td></tr>
+      <tr><td>Crop Type</td><td>{{ pred.get('crop','N/A') }}</td></tr>
+    </table>
+  </div>
+
+  <!-- Prediction Results -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-chart-bar"></i> AI Prediction Results</div>
+    <table class="info-table">
+      <tr><td>🦠 Disease Detected</td><td>{{ pred.get('disease_name','N/A') }} — <strong>{{ pred.get('disease_prob',0)|round(1) }}%</strong> confidence</td></tr>
+      <tr><td>🐛 Pest Detected</td><td>{{ pred.get('pest_name','N/A') }} — <strong>{{ pred.get('pest_prob',0)|round(1) }}%</strong> confidence</td></tr>
+      <tr><td>⏰ Days to Critical Outbreak</td><td><strong>{{ pred.get('outbreak_days','N/A') }} days</strong></td></tr>
+      <tr><td>⚠️ Overall Risk Level</td><td>
+        <span class="risk-badge risk-{{ pred.get('risk_level','MODERATE').upper() }}">
+          {{ pred.get('risk_level','N/A').upper() }}
+        </span>
+      </td></tr>
+    </table>
+  </div>
+
+  <!-- Leaf Images -->
+  {% if image_filenames %}
+  <div class="card">
+    <div class="card-title"><i class="fas fa-images"></i> Submitted Leaf Images ({{ image_filenames|length }})</div>
+    <div class="image-grid">
+      {% for fname in image_filenames %}
+        <img src="{{ url_for('static', filename='uploads/' + fname) }}" alt="Leaf image {{ loop.index }}"
+             onerror="this.style.display='none'">
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+
+
+  <!-- Doctor Comments + Actions -->
+  <form method="POST" action="/doctor/submit/{{ token }}">
+    <div class="comments-box">
+      <label for="comments">📝 Your Expert Comments & Report</label>
+      <div class="sub-label">Write your diagnosis, additional advice, dosage recommendations, seasonal notes, or any important observations below. These comments will be included in the PDF sent to the farmer.</div>
+      <textarea
+        id="comments"
+        name="comments"
+        class="comments-textarea"
+        placeholder="e.g. Based on the images and AI analysis, I confirm the presence of Early Blight affecting approximately 40% of the crop area. Immediate treatment with Copper-based fungicide at a rate of 3g/L is recommended. Ensure soil pH is between 6.0–6.8 for optimal recovery. Follow up treatment after 10 days if spread continues..."
+      ></textarea>
+    </div>
+
+    <div class="action-row">
+      <button type="submit" name="action" value="approve" class="btn btn-approve"
+        onclick="return confirm('Approve this report? The farmer will receive the verified PDF report by email.')">
+        <i class="fas fa-check-circle"></i> Approve & Send Report to Farmer
+      </button>
+      <button type="submit" name="action" value="refuse" class="btn btn-refuse"
+        onclick="return confirm('Refuse this report? The farmer will be notified with your comments to re-upload images.')">
+        <i class="fas fa-times-circle"></i> Refuse & Notify Farmer
+      </button>
+    </div>
+  </form>
+
+</div>
+</body>
+</html>
